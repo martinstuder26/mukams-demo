@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  scrollbar-gutter: stable;
   --ink: #1e302a;
   --muted: #53655c;
   --surface: #fff;
@@ -33,7 +34,7 @@ button, input, select { font: inherit; }
 .brand-mark path { stroke: var(--chrome); }
 .brand strong { display: block; font-size: 20px; line-height: 1.05; letter-spacing: -.035em; }
 .top-nav { display: flex; gap: 5px; font-size: 13px; font-weight: 650; }
-.top-nav a { padding: 8px 13px; border-radius: 7px; text-decoration: none; color: #d7e5db; }
+.top-nav a, .top-nav span { padding: 8px 13px; border-radius: 7px; text-decoration: none; color: #d7e5db; }
 .top-nav a:hover, .top-nav [aria-current] { background: #ffffff16; color: #fff; }
 #connection { margin-left: auto; background: #ffffff16; color: #e4eee7; }
 #connection[data-tone="green"] .dot { background: #a9daaa; }
@@ -50,9 +51,7 @@ h3 { font-size: 14px; }
 .gate-picker { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; font-weight: 700; }
 .gate-picker select { min-height: 40px; max-width: min(280px, 67vw); border: 1px solid #c4d6c9; border-radius: 9px; padding: 6px 9px; background: var(--surface); color: var(--ink); }
 #gate-name, #camera-position, #gate-overview-name { overflow-wrap: anywhere; }
-.settings-link { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 13px; font-weight: 750; text-decoration: none; min-height: 40px; padding: 8px 13px; border: 1px solid #c4d6c9; border-radius: 9px; background: var(--surface); white-space: nowrap; }
-.settings-link:hover { background: var(--green-tint); }
-.settings-link svg, .status-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.status-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .pill { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 24px; font-size: 12px; font-weight: 700; }
 [data-tone="green"] { background: var(--green-tint); color: var(--green); }
 [data-tone="amber"] { background: var(--amber-tint); color: var(--amber); }
@@ -92,6 +91,19 @@ button:disabled { cursor: default; opacity: .58; }
 .demo-controls label { font-weight: 750; margin-right: 3px; }
 .demo-controls select { min-height: 38px; max-width: 100%; color: var(--ink); background: var(--surface); border: 1px solid #c4d6c9; border-radius: 8px; padding: 6px 8px; }
 .demo-controls .pill { margin-left: auto; }
+
+.demo-settings { display: grid; gap: 14px; }
+.demo-settings .card-head, .demo-settings-actions { flex-wrap: wrap; }
+.demo-settings-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.demo-settings-fields.zone-fields { grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); }
+.demo-settings label, .demo-settings legend { color: var(--muted); font-size: 13px; font-weight: 700; }
+.demo-settings label { display: grid; gap: 5px; min-width: 0; }
+.demo-settings :is(input, select) { width: 100%; min-width: 0; min-height: 40px; padding: 7px 9px; border: 1px solid #c4d6c9; border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 500; }
+.demo-settings fieldset { min-width: 0; margin: 14px 0 0; padding: 0; border: 0; }
+.demo-settings legend { padding: 0; margin-bottom: 7px; }
+.demo-settings-actions { display: flex; align-items: center; gap: 12px; }
+section .demo-settings-actions { margin-top: 14px; }
+.demo-settings-actions p { font-size: 13px; }
 
 .picture { background: #203637; border-radius: 12px; position: relative; display: grid; place-items: center; overflow: hidden; aspect-ratio: 16 / 9; }
 .picture > svg, .picture > img { display: block; width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; }
@@ -145,7 +157,7 @@ footer { color: var(--muted); display: flex; justify-content: space-between; gap
 @media (max-width: 510px) {
   .header-inner { flex-wrap: wrap; column-gap: 9px; row-gap: 5px; padding-block: 10px; }
   .top-nav { order: 3; width: 100%; flex-wrap: wrap; }
-  .top-nav a { padding: 7px 9px; }
+  .top-nav a, .top-nav span { padding: 7px 9px; }
   main { padding-top: 23px; }
   .intro { align-items: start; flex-direction: column; gap: 12px; margin-bottom: 17px; }
   .status-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
