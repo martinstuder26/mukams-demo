@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17352e">
+  <title>MUKAMS · Stallübersicht</title>
+  <link rel="stylesheet" href="./mukams.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'">
+  <script src="./demo-data.js" defer></script>
+  <script src="./demo-public.js" defer></script>
+  <script src="./mukams.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="MUKAMS, Stallübersicht">
+        <svg class="brand-mark" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" fill="currentColor"/><path d="M9 25V12l5 5 4-5 4 5 5-5v13M9 23h18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <strong>MUKAMS</strong>
+      </a>
+      <nav class="top-nav" aria-label="Navigation">
+        <a href="#uebersicht" aria-current="page">Übersicht</a><a href="#ereignisse">Meldungen</a>
+        <a id="settings-link" hidden>Einstellungen</a>
+      </nav>
+      <span class="pill" id="connection" data-tone="neutral"><span class="dot"></span><span id="connection-text">Verbindung wird aufgebaut</span></span>
+    </div>
+  </header>
+
+  <main id="uebersicht">
+    <div class="intro">
+      <div><p class="eyebrow">Stallbetrieb</p><h1>Stallübersicht</h1><p class="muted">Kameras, Tore und Meldungen an einem Ort.</p></div>
+      <div class="view-mode">
+        <span id="mode" class="pill" data-tone="neutral">Demo</span>
+        <label class="gate-picker" id="gate-picker" hidden>Tor <select id="dashboard-gate"></select></label>
+      </div>
+    </div>
+
+    <dl class="status-strip" aria-label="Aktueller Status">
+      <div class="status-tile" id="camera-tile" data-tone="neutral">
+        <dt><span class="status-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="2"/><path d="m17 10 4-2v8l-4-2"/></svg></span>Kamera</dt>
+        <dd id="camera-state">Warte auf Daten</dd>
+      </div>
+      <div class="status-tile" id="gate-tile" data-tone="neutral">
+        <dt><span class="status-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16M20 4v16M4 7h16M4 12h16M4 17h16M9 7v10m6-10v10"/></svg></span><span id="gate-overview-name">Tor</span></dt>
+        <dd id="gate-overview">Unbekannt</dd>
+      </div>
+      <div class="status-tile" id="fault-tile" data-tone="neutral">
+        <dt><span class="status-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 8h18s-3-1-3-8m-8 12a2 2 0 0 0 4 0"/></svg></span>Störungen</dt>
+        <dd id="active-fault"><span id="fault-message" role="status">Warte auf Daten</span></dd>
+      </div>
+    </dl>
+
+    <form class="card demo-controls" id="demo-controls" hidden>
+      <label for="demo-case">Demo-Szenario</label>
+      <select id="demo-case"><option value="">Automatischer Wechsel</option></select>
+      <button type="submit">Szenario starten</button>
+      <span id="demo-result" class="pill" data-tone="neutral" role="status"></span>
+    </form>
+
+    <div class="dashboard">
+      <section class="card camera" aria-labelledby="camera-title">
+        <div class="card-head">
+          <div><h2 id="camera-title">Kameravorschau</h2><p class="muted" id="camera-position">Position der Kamera</p></div>
+          <button id="toggle-preview" type="button" aria-pressed="true">Bild ausblenden</button>
+        </div>
+        <div class="picture">
+          <svg id="scene" viewBox="0 0 800 450" role="img" aria-label="Illustrierter Stallzulauf mit markierter Prüfzone" hidden>
+            <defs>
+              <linearGradient id="floor-shade" x1="0" x2="0" y1="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#657773"/><stop offset="1" stop-color="#414f4a"/></linearGradient>
+              <linearGradient id="wall-shade" x1="0" x2="0" y1="0" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#243b3b"/><stop offset="1" stop-color="#47605a"/></linearGradient>
+              <pattern id="floor-lines" width="44" height="26" patternUnits="userSpaceOnUse" patternTransform="skewY(-8)"><path d="M0 0h44M11 0v12" fill="none" stroke="#a8b0a0" stroke-opacity=".12"/></pattern>
+              <symbol id="cattle" viewBox="0 0 160 106">
+                <ellipse cx="77" cy="94" rx="71" ry="10" fill="#20312b" opacity=".4"/>
+                <path d="M34 52l-2 42h9l7-39m9 0-1 33h8l7-33m22-1 3 41h9l3-42m9-2 1 36h8l4-36" fill="var(--spots)"/>
+                <path d="M22 32Q10 45 12 65" fill="none" stroke="var(--spots)" stroke-width="4" stroke-linecap="round"/>
+                <path d="M23 21C31 9 67 9 88 12c20 3 31 9 34 25 2 15-7 29-22 33-23 7-50 7-67-1-16-8-21-27-10-48Z" fill="var(--coat)"/>
+                <path d="M29 17q18-9 30-4c6 13 9 24-4 29-14 8-21 0-30-5Zm54 0q29 0 35 17c6 17-11 29-21 28-8-8-16-17-14-45Z" fill="var(--spots)"/>
+                <path d="M107 29q-1-20 17-22 19-2 24 13l9 19q-3 15-19 14-23-3-31-24Z" fill="var(--coat)"/>
+                <path d="M120 18q-12-5-15-14 16-5 22 5Z" fill="var(--spots)"/>
+                <ellipse cx="149" cy="42" rx="10" ry="9" fill="#b99187"/><circle cx="139" cy="23" r="2.7" fill="#1e302e"/>
+              </symbol>
+              <symbol id="person" viewBox="0 0 60 120"><circle cx="30" cy="22" r="13" fill="#c1a78a"/><path d="M30 40v42M9 71l21-27 21 27" fill="none" stroke="#82a1ad" stroke-width="13" stroke-linecap="round"/><path d="M20 112l10-34 10 34" fill="none" stroke="#35454b" stroke-width="11" stroke-linecap="round"/></symbol>
+            </defs>
+            <rect width="800" height="450" fill="url(#wall-shade)"/>
+            <path d="M0 217l737-49 63 56v226H0Z" fill="url(#floor-shade)"/>
+            <path d="M0 240l720-58 80 80v188H0Z" fill="url(#floor-lines)"/>
+            <path d="M0 78h800M0 88h800" stroke="#172d30" stroke-width="14"/>
+            <g fill="#96afa6" stroke="#203837" stroke-width="7">
+              <rect x="49" y="109" width="94" height="51"/><rect x="195" y="109" width="94" height="51"/><rect x="341" y="109" width="94" height="51"/><rect x="487" y="109" width="94" height="51"/>
+            </g>
+            <path d="M96 112v45m146-45v45m146-45v45m146-45v45" stroke="#527770" stroke-width="4"/>
+            <path d="M26 83v149m144-149v144m147-144v139m144-139v134m147-134v127m147-127v126" stroke="#213b38" stroke-width="16"/>
+            <path d="M0 226l658-48M0 248l658-48M0 271l658-48" stroke="#b2beb1" stroke-width="3"/>
+            <path d="M22 219v62m112-72v62m112-69v62m112-69v62m112-70v62m112-70v62" stroke="#83988c" stroke-width="5"/>
+            <path d="M0 430l744-90" stroke="#c6bd92" stroke-width="5" opacity=".55"/>
+            <path d="M660 166v124m88-64v124" stroke="#d9ddc8" stroke-width="7"/>
+            <g id="gate-closed" stroke="#d9ad72" stroke-width="4"><path d="M663 186l84 60m-84-35 84 60m-84-35 84 60m-84-35 84 60"/></g>
+            <g id="gate-open" stroke="#9cd9ad" stroke-width="4" visibility="hidden"><path d="M663 186l113-18v94l-113 18m0-70 113-17m-113 41 113-18m-113 40 113-18"/></g>
+            <rect x="673" y="117" width="68" height="23" rx="5" fill="#1b3331"/>
+            <text x="707" y="133" fill="#edf3e4" text-anchor="middle" font-size="12" font-weight="700">TOR</text>
+            <rect id="zone" fill="#b7efbf" fill-opacity=".06" stroke="#b7efbf" stroke-width="2" stroke-dasharray="7 5"/>
+            <text id="zone-label" fill="#dbf4dd" font-size="13" font-weight="750">PRÜFZONE</text>
+            <g id="animals"></g>
+          </svg>
+          <img id="live-image" alt="Aktuelles Kamerabild vom Stallzulauf" hidden>
+          <div class="picture-placeholder" id="picture-message">Warte auf die Bildquelle …</div>
+          <span class="picture-tag" id="camera-tag">KAMERA</span>
+        </div>
+        <div class="camera-foot"><span id="frame-caption" class="muted">Simulierte Stallansicht</span><strong id="scenario">—</strong></div>
+      </section>
+
+      <section class="card gate" aria-labelledby="gate-title">
+        <div class="card-head"><div><h2 id="gate-title">Torstatus</h2><p class="muted" id="gate-name">Gewähltes Tor</p></div><span id="gate-source" class="pill" data-tone="neutral">Simuliert</span></div>
+        <div class="gate-summary" id="gate-summary" data-tone="neutral">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M6 29V8m24 21V8M7 11h22M7 18h22M7 25h22M13 11v14m10-14v14" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+          <div><p>Torstellung</p><strong id="gate-state">Unbekannt</strong></div>
+        </div>
+        <p id="reason" class="gate-reason muted">Warte auf MUKAMS.</p>
+        <div class="gate-detail">
+          <div class="line"><span>Bildbestätigung</span><strong id="frame-count">—</strong></div>
+          <progress id="frame-progress" value="0" max="4" aria-label="Bestätigte Bilder"></progress>
+        </div>
+        <div class="detections"><h3>Erkennungen</h3><ul id="detections"><li class="muted">Warte auf Daten</li></ul></div>
+      </section>
+
+      <section class="card events" id="ereignisse" aria-labelledby="event-title">
+        <div class="card-head"><div><h2 id="event-title">Meldungen</h2><p class="muted">Ereignisse dieser Sitzung</p></div><label class="filter"><input type="checkbox" id="fault-filter"> Nur Störungen</label></div>
+        <ul id="events" class="event-list"><li class="muted">Warte auf Daten</li></ul>
+      </section>
+
+      <section class="card system" aria-labelledby="system-title">
+        <div class="card-head"><div><h2 id="system-title">Systemstatus</h2><p class="muted">Auswertung vor Ort</p></div></div>
+        <dl>
+          <div><dt>Torautomatik</dt><dd id="gate-automation">—</dd></div>
+          <div><dt>Relaisausgang</dt><dd id="relay-output">—</dd></div>
+          <div id="sps-row" hidden><dt>SPS-Rückmeldung</dt><dd id="sps-state">—</dd></div>
+          <div><dt>Letzte Aktualisierung</dt><dd id="updated">—</dd></div>
+        </dl>
+      </section>
+    </div>
+    <footer><span>MUKAMS</span><span id="footer-mode">Lokales Dashboard · Torfreigabe simuliert</span></footer>
+  </main>
+</body>
+</html>
