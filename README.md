@@ -1,6 +1,5 @@
-# mukams-demo
-Öffentliche MUKAMS-Browser-Demo mit simulierten Kameras und Torfreigaben.
+# Kuherfassung mit Kamera · MUKAMS
 
-## Veröffentlichung
+Die [Kuherfassung](https://mukams.martinstuder.ch/?bestand=demo) speichert Kuhprofile und Referenzfotos im jeweiligen Browser. Die Demoherde enthält fiktive Stammdaten. Die Adressen der zwei Testkameras lassen sich auf der Seite eingeben.
 
-Cyon prüft den Branch `main` alle fünf Minuten und veröffentlicht `index.html`, `mukams.css`, `mukams.js`, `demo-data.js` und `demo-public.js`. Die [öffentliche Demo](https://mukams.martinstuder.ch/) ist über HTTPS erreichbar.
+Cyon veröffentlicht die fünf Seitendateien aus dem Branch main über den bestehenden Cronjob.
