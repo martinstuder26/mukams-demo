@@ -541,3 +541,9 @@ tbody tr:last-child td { border-bottom: 0; }
 #live-bildabgleich { padding: 16px; margin-bottom: 16px; }
 #live-bildabgleich summary { cursor: pointer; font-weight: 700; }
 #live-bildabgleich iframe { width: 100%; min-height: 650px; border: 0; }
+.fellmuster-public { max-width: 840px; }
+.fellmuster-public .card-body > p { margin-block: 12px; }
+.fellmuster-public .capture-actions { gap: 12px; }
+.fellmuster-public .capture-actions > label { display: grid; gap: 4px; max-width: 100%; font-weight: 650; }
+.fellmuster-public input[type="file"] { max-width: 100%; font-weight: 400; }
+.fellmuster-public .fellquelle { margin-top: 16px; font-size: .82rem; }
