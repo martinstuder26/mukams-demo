@@ -538,3 +538,6 @@ tbody tr:last-child td { border-bottom: 0; }
   .capture-fields { grid-template-columns: 1fr; }
   .capture-bestand { font-size: .8rem; }
 }
+#live-bildabgleich { padding: 16px; margin-bottom: 16px; }
+#live-bildabgleich summary { cursor: pointer; font-weight: 700; }
+#live-bildabgleich iframe { width: 100%; min-height: 650px; border: 0; }

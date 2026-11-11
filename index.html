@@ -6,10 +6,10 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' blob: https:; media-src 'self' blob: https:; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Kuherfassung mit Kamera · MUKAMS</title>
-  <link rel="stylesheet" href="./mukams.css?v=3d57354462ec">
+  <link rel="stylesheet" href="./mukams.css?v=bfb0c105d179">
   <script src="./demo-data.js?v=c0b7ca23eeb9" defer></script>
-  <script src="./mukams.js?v=db6d07791b9d" defer></script>
-  <script src="./demo-public.js?v=26d14d1c274b" defer></script>
+  <script src="./mukams.js?v=fc15b922d42f" defer></script>
+  <script src="./demo-public.js?v=313fa70e6025" defer></script>
 </head>
 <body class="capture-page">
   <header class="capture-header">
@@ -22,6 +22,10 @@
     <header class="page-head"><div><h1>Kuherfassung mit Kamera</h1>
       <p class="muted">Stammdaten und Referenzfotos für die Wiedererkennung erfassen. Die Einträge bleiben in diesem Browser.</p>
     </div></header>
+    <details class="card" id="live-bildabgleich"><summary>Bildvorschläge aus den Stallkameras zuordnen</summary>
+      <p>Die Vorschläge stammen vom MUKAMS-Laptop. Bilder derselben Kuh auswählen und gemeinsam zuordnen.</p>
+      <iframe src="/bildzuordnung/" title="Bildvorschläge aus den Stallkameras" loading="lazy"></iframe>
+    </details>
     <div class="capture-layout">
       <section class="card capture-cows" aria-labelledby="cows-heading">
         <header class="card-head"><div><h2 id="cows-heading">Kühe im Bestand</h2><p id="cow-count"></p></div>
@@ -41,6 +45,7 @@
               <label>Rasse <input name="rasse" maxlength="60"></label>
             </fieldset>
             <div class="capture-actions"><button class="primary" id="save-cow" type="submit" disabled>Kuh speichern</button>
+              <button id="delete-cow" type="button" disabled>Kuh löschen</button>
               <p id="cow-status" class="muted" role="status"></p></div>
           </form>
         </section>

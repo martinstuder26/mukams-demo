@@ -133,5 +133,17 @@ window.kuherfassungStore = (() => {
     });
   }
 
-  return { listCows, listPhotos, listReferences, saveCow, addPhoto, removePhoto, demoBlob };
+  function removeCow(cow) {
+    return access(["tiere", "fotos"], "readwrite", async tx => {
+      const cows = tx.objectStore("tiere");
+      const photos = tx.objectStore("fotos");
+      const key = [cow.bestand, cow.id];
+      if (!await outcome(cows.get(key))) throw new Error("Die Kuh wurde bereits gelöscht.");
+      const keys = await outcome(photos.index("kuh").getAllKeys(key));
+      for (const id of keys) await outcome(photos.delete(id));
+      await outcome(cows.delete(key));
+    });
+  }
+
+  return { listCows, listPhotos, listReferences, saveCow, addPhoto, removePhoto, removeCow, demoBlob };
 })();

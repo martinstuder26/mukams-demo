@@ -314,6 +314,7 @@ async function refreshPhotos(cow) {
 
 function selectCow(cow) {
   selected = cow;
+  get("delete-cow").disabled = !ready || !cow;
   discardDraft();
   for (const name of fields) form.elements.namedItem(name).value = cow?.[name] || "";
   get("cow-heading").textContent = cow ? cowLabel(cow) : "Neue Kuh";
@@ -679,6 +680,23 @@ function photoBlob(frame, rectangle) {
 get("new-cow").addEventListener("click", () => {
   selectCow();
   form.elements.namedItem("tiernummer").focus();
+});
+get("delete-cow").addEventListener("click", async () => {
+  const cow = selected;
+  if (!cow || !confirm(`${cowLabel(cow)} endgültig löschen? Alle ihre Fotos in diesem Browser werden ebenfalls gelöscht.`)) return;
+  get("delete-cow").disabled = true;
+  try {
+    await store.removeCow(cow);
+    referenceCache.clear();
+    const updated = await store.listCows(cow.bestand);
+    if (herd.value !== cow.bestand) return;
+    cows = updated;
+    selectCow(cows[0]);
+    notice("cow-status", "Kuh und ihre Fotos wurden gelöscht.");
+  } catch (error) {
+    notice("cow-status", error.message, true);
+    get("delete-cow").disabled = !selected;
+  }
 });
 get("cow-search").addEventListener("input", drawCows);
 herd.addEventListener("change", () => {
