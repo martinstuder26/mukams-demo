@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="./mukams.css?v=0ad70c42b61f">
   <script src="./demo-data.js?v=c0b7ca23eeb9" defer></script>
   <script src="./mukams.js?v=fc15b922d42f" defer></script>
-  <script src="./demo-public.js?v=313fa70e6025" defer></script>
+  <script src="./demo-public.js?v=a98f607c9c26" defer></script>
 </head>
 <body class="capture-page">
   <header class="capture-header">
@@ -24,9 +24,9 @@
     </div></header>
     <details class="card" id="live-bildabgleich" open><summary>Betriebsherde auf Cyon · Kühe und Referenzbilder</summary>
       <p><a href="/bildzuordnung/">Kuherfassung und Bildzuordnung im ganzen Fenster öffnen</a></p>
-      <iframe src="/bildzuordnung/" title="Kühe erfassen und Bildvorschläge aus dem Stall zuordnen" loading="lazy"></iframe>
+      <iframe id="cyon-bildzuordnung" src="/bildzuordnung/" title="Kühe erfassen und Bildvorschläge aus dem Stall zuordnen"></iframe>
     </details>
-    <details class="card" id="browser-erfassung"><summary>Separate Erfassung im Browser</summary>
+    <details class="card" id="browser-erfassung"><summary>Bereits in diesem Browser erfasste Kühe</summary>
     <p>Die Einträge in diesem Abschnitt bleiben in diesem Browser.</p>
     <div class="capture-layout">
       <section class="card capture-cows" aria-labelledby="cows-heading">
@@ -47,6 +47,7 @@
               <label>Rasse <input name="rasse" maxlength="60"></label>
             </fieldset>
             <div class="capture-actions"><button class="primary" id="save-cow" type="submit" disabled>Kuh speichern</button>
+              <button id="cow-online" type="button" hidden>Für Online-Bildzuordnung übernehmen</button>
               <button id="delete-cow" type="button" disabled>Kuh löschen</button>
               <p id="cow-status" class="muted" role="status"></p></div>
           </form>

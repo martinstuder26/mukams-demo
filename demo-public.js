@@ -314,6 +314,7 @@ async function refreshPhotos(cow) {
 
 function selectCow(cow) {
   selected = cow;
+  get("cow-online").hidden = !cow || cow.bestand !== "betrieb";
   get("delete-cow").disabled = !ready || !cow;
   discardDraft();
   for (const name of fields) form.elements.namedItem(name).value = cow?.[name] || "";
@@ -325,6 +326,41 @@ function selectCow(cow) {
   drawPhotos(cow);
   drawPreview();
 }
+
+get("cow-online").addEventListener("click", () => {
+  if (!selected || selected.bestand !== "betrieb") return;
+  const ohrmarke = selected.ohrmarke?.trim();
+  if (!ohrmarke) {
+    notice("cow-status", "Zuerst die Ohrmarke eintragen und die Kuh speichern.", true);
+    return;
+  }
+  const frame = get("cyon-bildzuordnung");
+  const anfrage = crypto.randomUUID();
+  const button = get("cow-online");
+  button.disabled = true;
+  notice("cow-status", "Kuh wird für die Online-Zuordnung übernommen …");
+  function finish(event) {
+    if (event.origin !== location.origin || event.source !== frame.contentWindow ||
+        event.data?.typ !== "mukams-kuh-online-ergebnis" || event.data.anfrage !== anfrage) return;
+    clearTimeout(timeout);
+    window.removeEventListener("message", finish);
+    button.disabled = false;
+    if (event.data.fehler) {
+      notice("cow-status", event.data.fehler, true);
+      return;
+    }
+    notice("cow-status", "Kuh ist für die Online-Zuordnung ausgewählt.");
+    get("live-bildabgleich").open = true;
+    get("live-bildabgleich").scrollIntoView({ block: "start" });
+  }
+  const timeout = setTimeout(() => {
+    window.removeEventListener("message", finish);
+    button.disabled = false;
+    notice("cow-status", "Die Online-Bildzuordnung hat nicht geantwortet. Bitte erneut versuchen.", true);
+  }, 12000);
+  window.addEventListener("message", finish);
+  frame.contentWindow.postMessage({ typ: "mukams-kuh-online", anfrage, ohrmarke, name: selected.name || "" }, location.origin);
+});
 
 async function loadHerd() {
   const key = herd.value;
@@ -824,5 +860,5 @@ for (const [key, label] of Object.entries(perspectives)) {
   get("perspective").append(option);
 }
 get("perspective").value = "oben";
-herd.value = new URLSearchParams(location.search).get("bestand") === "betrieb" ? "betrieb" : "demo";
+herd.value = new URLSearchParams(location.search).get("bestand") === "demo" ? "demo" : "betrieb";
 loadHerd();
