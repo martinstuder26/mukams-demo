@@ -4,6 +4,8 @@ const get = id => document.getElementById(id);
 const store = window.kuherfassungStore;
 const perspectives = window.kuherfassungDemo.ansichten;
 const fields = ["name", "tiernummer", "ohrmarke", "transponder", "rasse"];
+const cameraNumbers = [1, 2];
+const cameraStorageKey = "mukams-kuherfassung-kameras";
 const herd = get("bestand");
 const form = get("cow-form");
 const source = get("source");
@@ -198,6 +200,46 @@ function httpsAddress(value) {
     throw new Error("Eine HTTPS-Adresse ohne Benutzername oder Passwort verwenden.");
   }
   return url.href;
+}
+
+function loadCameraSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(cameraStorageKey));
+    for (const number of cameraNumbers) {
+      const setting = saved?.[number];
+      if (!setting) continue;
+      get(`camera-${number}`).value = setting.address ? httpsAddress(setting.address) : "";
+      get(`format-${number}`).value = setting.format === "video" ? "video" : "image";
+    }
+  } catch {
+    notice("camera-settings-status", "Gespeicherte Kameraadressen konnten nicht geladen werden.", true);
+  }
+}
+
+function saveCameraSettings(event) {
+  event.preventDefault();
+  const settings = {};
+  for (const number of cameraNumbers) {
+    const field = get(`camera-${number}`);
+    const address = field.value.trim();
+    try {
+      settings[number] = {
+        address: address ? httpsAddress(address) : "",
+        format: get(`format-${number}`).value,
+      };
+    } catch (error) {
+      field.focus();
+      notice("camera-settings-status", `Kamera ${number}: ${error.message}`, true);
+      return;
+    }
+  }
+  try {
+    localStorage.setItem(cameraStorageKey, JSON.stringify(settings));
+    for (const number of cameraNumbers) get(`camera-${number}`).value = settings[number].address;
+    notice("camera-settings-status", "Kameraeinstellungen in diesem Browser gespeichert.");
+  } catch {
+    notice("camera-settings-status", "Der Browserspeicher ist nicht verfügbar. Die Kameraeinstellungen wurden nicht gespeichert.", true);
+  }
 }
 
 function loadMedia(target, url, label, remote, current) {
@@ -435,6 +477,8 @@ get("save-photo").addEventListener("click", async () => {
   }
 });
 window.addEventListener("pagehide", closeSource);
+get("camera-form").addEventListener("submit", saveCameraSettings);
+loadCameraSettings();
 
 for (const [key, label] of Object.entries(perspectives)) {
   const option = node("option", label);

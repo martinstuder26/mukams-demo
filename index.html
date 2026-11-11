@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="./mukams.css?v=fecb4f80e012">
   <script src="./demo-data.js?v=8979a0f5c7b1" defer></script>
   <script src="./mukams.js?v=eacd66923582" defer></script>
-  <script src="./demo-public.js?v=455537be27dd" defer></script>
+  <script src="./demo-public.js?v=c8fdefe565fd" defer></script>
 </head>
 <body class="capture-page">
   <header class="capture-header">
@@ -49,13 +49,17 @@
           <div class="card-body">
             <details id="camera-settings" class="capture-settings">
               <summary>Adressen der beiden Testkameras</summary>
-              <div class="capture-fields">
-                <label>Kamera 1 <input id="camera-1" type="url" placeholder="https://…/snapshot.jpg" autocomplete="off" maxlength="2048"></label>
-                <label>Format Kamera 1 <select id="format-1"><option value="image">JPEG, PNG oder MJPEG</option><option value="video">MP4 oder WebM</option></select></label>
-                <label>Kamera 2 <input id="camera-2" type="url" placeholder="https://…/snapshot.jpg" autocomplete="off" maxlength="2048"></label>
-                <label>Format Kamera 2 <select id="format-2"><option value="image">JPEG, PNG oder MJPEG</option><option value="video">MP4 oder WebM</option></select></label>
-              </div>
-              <p class="muted">Direkte HTTPS-Adresse des Bildes oder Videos eingeben. Für die Aufnahme muss der Kameraserver den Zugriff von dieser Seite erlauben (CORS). Die Adressen gelten für diese geöffnete Seite.</p>
+              <form id="camera-form">
+                <div class="capture-fields">
+                  <label>Kamera 1 <input id="camera-1" type="url" placeholder="https://…/snapshot.jpg" autocomplete="off" maxlength="2048"></label>
+                  <label>Format Kamera 1 <select id="format-1"><option value="image">JPEG, PNG oder MJPEG</option><option value="video">MP4 oder WebM</option></select></label>
+                  <label>Kamera 2 <input id="camera-2" type="url" placeholder="https://…/snapshot.jpg" autocomplete="off" maxlength="2048"></label>
+                  <label>Format Kamera 2 <select id="format-2"><option value="image">JPEG, PNG oder MJPEG</option><option value="video">MP4 oder WebM</option></select></label>
+                </div>
+                <p class="muted">Direkte HTTPS-Adressen ohne Zugangsdaten eingeben. Der Kameraserver muss die Aufnahme von dieser Seite erlauben (CORS). Gespeicherte Adressen und Formate bleiben in diesem Browser.</p>
+                <div class="capture-actions"><button type="submit">Kameraadressen speichern</button>
+                  <span id="camera-settings-status" class="muted" role="status"></span></div>
+              </form>
             </details>
             <div class="capture-fields capture-source">
               <label>Bildquelle <select id="source"><option value="1">Kamera 1</option><option value="2">Kamera 2</option><option value="device">Gerätekamera</option><option value="file">Bilddatei</option></select></label>
