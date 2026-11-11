@@ -2,6 +2,7 @@
 
 window.kuherfassungStore = (() => {
   let database;
+  const demoBlob = jpeg => new Blob([Uint8Array.from(atob(jpeg), byte => byte.charCodeAt(0))], { type: "image/jpeg" });
   const outcome = request => new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -9,14 +10,49 @@ window.kuherfassungStore = (() => {
 
   function open() {
     if (!database) {
-      const request = indexedDB.open("mukams-kuherfassung", 1);
-      request.onupgradeneeded = () => {
-        const cows = request.result.createObjectStore("tiere", { keyPath: ["bestand", "id"] });
-        cows.createIndex("bestand", "bestand");
-        request.result.createObjectStore("fotos", { keyPath: "id" }).createIndex("kuh", ["bestand", "kuh"]);
-        for (const cow of window.kuherfassungDemo.tiere) cows.add(cow);
+      const request = indexedDB.open("mukams-kuherfassung", 2);
+      request.onupgradeneeded = event => {
+        if (event.oldVersion === 0) {
+          const cows = request.result.createObjectStore("tiere", { keyPath: ["bestand", "id"] });
+          cows.createIndex("bestand", "bestand");
+          request.result.createObjectStore("fotos", { keyPath: "id" }).createIndex("kuh", ["bestand", "kuh"]);
+          for (const cow of window.kuherfassungDemo.tiere) cows.add(cow);
+        }
+        const cows = request.transaction.objectStore("tiere");
+        const photos = request.transaction.objectStore("fotos");
+        photos.createIndex("perspektive", ["bestand", "ansicht"]);
+        const counts = new Map();
+        for (const { jpeg, ...photo } of window.kuherfassungDemo.fotos) {
+          photos.add({ ...photo, bestand: "demo", bild: demoBlob(jpeg) });
+          counts.set(photo.kuh, (counts.get(photo.kuh) ?? 0) + 1);
+        }
+        for (const [id, count] of counts) {
+          const read = cows.get(["demo", id]);
+          read.onsuccess = () => {
+            if (read.result) cows.put({ ...read.result, fotos: read.result.fotos + count });
+          };
+        }
       };
-      database = outcome(request).catch(error => {
+      database = new Promise((resolve, reject) => {
+        let blocked = false;
+        request.onblocked = () => {
+          blocked = true;
+          reject(new Error("Die Kuherfassung ist in einem weiteren Tab geöffnet. Den anderen Tab schliessen und diese Seite neu laden."));
+        };
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const connection = request.result;
+          if (blocked) {
+            connection.close();
+            return;
+          }
+          connection.onversionchange = () => {
+            connection.close();
+            database = undefined;
+          };
+          resolve(connection);
+        };
+      }).catch(error => {
         database = undefined;
         throw error;
       });
@@ -50,6 +86,10 @@ window.kuherfassungStore = (() => {
     return access("fotos", "readonly", tx => outcome(tx.objectStore("fotos").index("kuh").getAll([cow.bestand, cow.id])));
   }
 
+  function listReferences(herd, perspective) {
+    return access("fotos", "readonly", tx => outcome(tx.objectStore("fotos").index("perspektive").getAll([herd, perspective])));
+  }
+
   function saveCow(cow) {
     return access("tiere", "readwrite", async tx => {
       const store = tx.objectStore("tiere");
@@ -71,6 +111,7 @@ window.kuherfassungStore = (() => {
       const key = [cow.bestand, cow.id];
       const entry = await outcome(cows.get(key));
       if (!entry) throw new Error("Die Kuh ist nicht im gewählten Bestand vorhanden.");
+      if (await outcome(photos.get(photo.id))) throw new Error("Dieses Prüffoto ist bereits gespeichert.");
       const existing = await outcome(photos.index("kuh").getAll(key));
       if (existing.filter(item => item.ansicht === photo.ansicht).length >= 12) {
         throw new Error("Für diese Perspektive sind bereits 12 Bilder gespeichert.");
@@ -92,5 +133,5 @@ window.kuherfassungStore = (() => {
     });
   }
 
-  return { listCows, listPhotos, saveCow, addPhoto, removePhoto };
+  return { listCows, listPhotos, listReferences, saveCow, addPhoto, removePhoto, demoBlob };
 })();

@@ -6,10 +6,10 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' blob: https:; media-src 'self' blob: https:; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Kuherfassung mit Kamera · MUKAMS</title>
-  <link rel="stylesheet" href="./mukams.css?v=fecb4f80e012">
-  <script src="./demo-data.js?v=8979a0f5c7b1" defer></script>
-  <script src="./mukams.js?v=eacd66923582" defer></script>
-  <script src="./demo-public.js?v=c8fdefe565fd" defer></script>
+  <link rel="stylesheet" href="./mukams.css?v=3d57354462ec">
+  <script src="./demo-data.js?v=c0b7ca23eeb9" defer></script>
+  <script src="./mukams.js?v=db6d07791b9d" defer></script>
+  <script src="./demo-public.js?v=26d14d1c274b" defer></script>
 </head>
 <body class="capture-page">
   <header class="capture-header">
@@ -69,6 +69,7 @@
               <button type="button" id="open-source">Quelle öffnen</button>
               <button type="button" id="take-photo" disabled>Bild übernehmen</button>
               <button type="button" id="stop-source" disabled>Kamera schliessen</button>
+              <button type="button" id="next-demo-photo" hidden>Nächstes Prüffoto</button>
             </div>
             <div class="capture-preview">
               <img id="camera-image" alt="Aktuelles Kamerabild" hidden>
@@ -79,7 +80,17 @@
             <div class="capture-actions" id="photo-actions" hidden>
               <label for="perspective">Perspektive</label><select id="perspective"></select>
               <button type="button" id="reset-crop">Ganzes Bild</button>
-              <button type="button" class="primary" id="save-photo" disabled>Referenzfoto speichern</button>
+            </div>
+            <div id="photo-review" class="capture-review" hidden>
+              <p id="match-status" role="status"></p>
+              <div class="capture-actions" id="match-actions" hidden>
+                <button type="button" class="primary" id="confirm-match">Zuordnung bestätigen</button>
+                <button type="button" id="reject-match">Ablehnen</button>
+              </div>
+              <div class="capture-actions" id="manual-actions" hidden>
+                <label for="manual-cow">Kuh auswählen</label><select id="manual-cow"></select>
+                <button type="button" class="primary" id="save-photo" disabled>Referenzfoto speichern</button>
+              </div>
             </div>
             <p id="photo-status" class="muted capture-status" role="status"></p>
           </div>
@@ -87,6 +98,7 @@
         <section class="card" aria-labelledby="photos-heading">
           <header class="card-head"><div><h2 id="photos-heading">Referenzfotos</h2><p>Fotos herunterladen und bei Bedarf lokal in MUKAMS importieren.</p></div></header>
           <div id="photos" class="card-body capture-photos"></div>
+          <p id="demo-photo-source" class="card-foot muted" hidden>Die Demoherde verwendet fiktive Stammdaten. Die Kuhbilder stammen von Campbell, Burghardt, Yu und Dowsey (2024), University of Bristol. <a href="https://doi.org/10.5523/bris.2inu67jru7a6821kkgehxg3cv2">MultiCamCows2024</a><br>Contains information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/non-commercial-government-licence/version/2/">Non-Commercial Government Licence v2.0</a>.</p>
         </section>
       </div>
     </div>
