@@ -3,33 +3,113 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>Fellmustererkennung · MUKAMS</title>
-  <link rel="stylesheet" href="./mukams.css?v=bda07f2ea339">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' blob: https:; media-src 'self' blob: https:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Kuherfassung mit Kamera · MUKAMS</title>
+  <link rel="stylesheet" href="./mukams.css?v=0ad70c42b61f">
   <script src="./demo-data.js?v=c0b7ca23eeb9" defer></script>
-  <script src="./demo-public.js?v=5f0b466f101f" defer></script>
+  <script src="./mukams.js?v=fc15b922d42f" defer></script>
+  <script src="./demo-public.js?v=313fa70e6025" defer></script>
 </head>
-<body>
-  <header class="capture-header"><div class="brand"><span class="brand-mark" aria-hidden="true">M</span><strong>MUKAMS</strong></div></header>
-  <main class="fellmuster-public">
-    <header class="page-head"><div><h1>Fellmustererkennung</h1>
-      <p class="muted">Vergleichen Sie ein Foto mit den Referenzbildern der Demoherde.</p></div></header>
-    <section class="card" aria-labelledby="foto-titel">
-      <header class="card-head"><h2 id="foto-titel">Foto prüfen</h2></header>
-      <div class="card-body">
-        <p>Am besten eignet sich ein eng zugeschnittenes Foto vom Rücken einer einzelnen Kuh, von oben aufgenommen.</p>
-        <div class="capture-actions">
-          <label>Eigenes Foto <input id="fellfoto" type="file" accept="image/jpeg,image/png,image/webp"></label>
-          <button id="prueffoto" type="button" class="primary">Prüfbild ausprobieren</button>
-        </div>
-        <div id="fellvorschau" class="capture-preview" hidden><img id="fellbild" alt="Foto zur Fellmusterprüfung"></div>
-        <p id="fellergebnis" class="capture-review" role="status" hidden></p>
-        <p id="fellloesung" class="muted" hidden></p>
+<body class="capture-page">
+  <header class="capture-header">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">M</span><strong>MUKAMS</strong></div>
+    <label class="capture-bestand" for="bestand">Bestand
+      <select id="bestand"><option value="demo">Demoherde</option><option value="betrieb">Betriebsherde</option></select>
+    </label>
+  </header>
+  <main class="capture-main">
+    <header class="page-head"><div><h1>Kuherfassung mit Kamera</h1>
+      <p class="muted">Kühe der Betriebsherde erfassen und Webcam-Bilder vom Laptop als Referenzen zuordnen.</p>
+    </div></header>
+    <details class="card" id="live-bildabgleich" open><summary>Betriebsherde auf Cyon · Kühe und Referenzbilder</summary>
+      <p><a href="/bildzuordnung/">Kuherfassung und Bildzuordnung im ganzen Fenster öffnen</a></p>
+      <iframe src="/bildzuordnung/" title="Kühe erfassen und Bildvorschläge aus dem Stall zuordnen" loading="lazy"></iframe>
+    </details>
+    <details class="card" id="browser-erfassung"><summary>Separate Erfassung im Browser</summary>
+    <p>Die Einträge in diesem Abschnitt bleiben in diesem Browser.</p>
+    <div class="capture-layout">
+      <section class="card capture-cows" aria-labelledby="cows-heading">
+        <header class="card-head"><div><h2 id="cows-heading">Kühe im Bestand</h2><p id="cow-count"></p></div>
+          <button type="button" class="primary" id="new-cow" disabled>Neue Kuh</button></header>
+        <div class="card-body"><input id="cow-search" type="search" aria-label="Kuh suchen" placeholder="Name oder Nummer" autocomplete="off"></div>
+        <div class="capture-list" id="cows"></div>
+      </section>
+      <div class="stack">
+        <section class="card">
+          <header class="card-head"><h2 id="cow-heading">Kuhstammdaten</h2></header>
+          <form id="cow-form" class="card-body">
+            <fieldset id="cow-fields" class="capture-fields" disabled>
+              <label>Name <input name="name" maxlength="60"></label>
+              <label>Tiernummer <input name="tiernummer" maxlength="40"></label>
+              <label>Ohrmarke <input name="ohrmarke" maxlength="60"></label>
+              <label>Transponder <input name="transponder" maxlength="60"></label>
+              <label>Rasse <input name="rasse" maxlength="60"></label>
+            </fieldset>
+            <div class="capture-actions"><button class="primary" id="save-cow" type="submit" disabled>Kuh speichern</button>
+              <button id="delete-cow" type="button" disabled>Kuh löschen</button>
+              <p id="cow-status" class="muted" role="status"></p></div>
+          </form>
+        </section>
+        <section class="card" aria-labelledby="camera-heading">
+          <header class="card-head"><div><h2 id="camera-heading">Kameraaufnahme</h2><p id="camera-target">Zuerst eine Kuh wählen oder anlegen.</p></div></header>
+          <div class="card-body">
+            <details id="camera-settings" class="capture-settings">
+              <summary>Adressen der beiden Testkameras</summary>
+              <form id="camera-form">
+                <div class="capture-fields">
+                  <label>Kamera 1 <input id="camera-1" type="url" placeholder="https://…/snapshot.jpg" autocomplete="off" maxlength="2048"></label>
+                  <label>Format Kamera 1 <select id="format-1"><option value="image">JPEG, PNG oder MJPEG</option><option value="video">MP4 oder WebM</option></select></label>
+                  <label>Kamera 2 <input id="camera-2" type="url" placeholder="https://…/snapshot.jpg" autocomplete="off" maxlength="2048"></label>
+                  <label>Format Kamera 2 <select id="format-2"><option value="image">JPEG, PNG oder MJPEG</option><option value="video">MP4 oder WebM</option></select></label>
+                </div>
+                <p class="muted">Direkte HTTPS-Adressen ohne Zugangsdaten eingeben. Der Kameraserver muss die Aufnahme von dieser Seite erlauben (CORS). Gespeicherte Adressen und Formate bleiben in diesem Browser.</p>
+                <div class="capture-actions"><button type="submit">Kameraadressen speichern</button>
+                  <span id="camera-settings-status" class="muted" role="status"></span></div>
+              </form>
+            </details>
+            <div class="capture-fields capture-source">
+              <label>Bildquelle <select id="source"><option value="1">Kamera 1</option><option value="2">Kamera 2</option><option value="device">Gerätekamera</option><option value="file">Bilddatei</option></select></label>
+              <label id="file-label" hidden>Bilddatei <input id="file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+            </div>
+            <div class="capture-actions">
+              <button type="button" id="open-source">Quelle öffnen</button>
+              <button type="button" id="take-photo" disabled>Bild übernehmen</button>
+              <button type="button" id="stop-source" disabled>Kamera schliessen</button>
+              <button type="button" id="next-demo-photo" hidden>Nächstes Prüffoto</button>
+            </div>
+            <div class="capture-preview">
+              <img id="camera-image" alt="Aktuelles Kamerabild" hidden>
+              <video id="camera-video" muted playsinline controls aria-label="Kameravideo" hidden></video>
+              <canvas id="crop" aria-label="Bildausschnitt markieren" hidden></canvas>
+              <p id="preview-empty">Kamera öffnen oder eine Bilddatei wählen.</p>
+            </div>
+            <div class="capture-actions" id="photo-actions" hidden>
+              <label for="perspective">Perspektive</label><select id="perspective"></select>
+              <button type="button" id="reset-crop">Ganzes Bild</button>
+            </div>
+            <div id="photo-review" class="capture-review" hidden>
+              <p id="match-status" role="status"></p>
+              <div class="capture-actions" id="match-actions" hidden>
+                <button type="button" class="primary" id="confirm-match">Zuordnung bestätigen</button>
+                <button type="button" id="reject-match">Ablehnen</button>
+              </div>
+              <div class="capture-actions" id="manual-actions" hidden>
+                <label for="manual-cow">Kuh auswählen</label><select id="manual-cow"></select>
+                <button type="button" class="primary" id="save-photo" disabled>Referenzfoto speichern</button>
+              </div>
+            </div>
+            <p id="photo-status" class="muted capture-status" role="status"></p>
+          </div>
+        </section>
+        <section class="card" aria-labelledby="photos-heading">
+          <header class="card-head"><div><h2 id="photos-heading">Referenzfotos</h2><p>Fotos herunterladen und bei Bedarf lokal in MUKAMS importieren.</p></div></header>
+          <div id="photos" class="card-body capture-photos"></div>
+          <p id="demo-photo-source" class="card-foot muted" hidden>Die Demoherde verwendet fiktive Stammdaten. Die Kuhbilder stammen von Campbell, Burghardt, Yu und Dowsey (2024), University of Bristol. <a href="https://doi.org/10.5523/bris.2inu67jru7a6821kkgehxg3cv2">MultiCamCows2024</a><br>Contains information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/non-commercial-government-licence/version/2/">Non-Commercial Government Licence v2.0</a>.</p>
+        </section>
       </div>
-    </section>
-    <p class="fellquelle muted">Beispielbilder von Campbell, Burghardt, Yu und Dowsey (2024), University of Bristol.
-      <a href="https://doi.org/10.5523/bris.2inu67jru7a6821kkgehxg3cv2">MultiCamCows2024</a> ·
-      <a href="https://www.nationalarchives.gov.uk/doc/non-commercial-government-licence/version/2/">Non-Commercial Government Licence v2.0</a>.</p>
+    </div>
+    </details>
   </main>
 </body>
 </html>

@@ -541,6 +541,9 @@ tbody tr:last-child td { border-bottom: 0; }
 #live-bildabgleich { padding: 16px; margin-bottom: 16px; }
 #live-bildabgleich summary { cursor: pointer; font-weight: 700; }
 #live-bildabgleich iframe { width: 100%; min-height: 650px; border: 0; }
+#browser-erfassung { padding: 16px; }
+#browser-erfassung summary { cursor: pointer; font-weight: 700; }
+#browser-erfassung > p { margin-block: 12px; }
 .fellmuster-public { max-width: 840px; }
 .fellmuster-public .card-body > p { margin-block: 12px; }
 .fellmuster-public .capture-actions { gap: 12px; }
